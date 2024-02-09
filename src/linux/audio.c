@@ -29,7 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "../asm_call.h"
-#include "../cfg.h"
+#include "cfg.h"
 
 #ifdef __LIBAO__
 static pthread_t audio_thread;

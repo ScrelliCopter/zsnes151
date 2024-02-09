@@ -26,6 +26,7 @@ Config file handler creator by Nach (C) 2005-2007
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <algorithm>
 #include <sstream>

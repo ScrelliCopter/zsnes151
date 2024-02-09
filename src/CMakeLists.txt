@@ -27,6 +27,10 @@ zsnes_target_defs_common(parsegen)
 zsnes_target_c_flags(parsegen)
 
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	find_package(OpenGL)
+endif()
+
 add_executable(zsnes)
 if (DEBUGGER)
 	find_package(Curses REQUIRED)
@@ -173,10 +177,10 @@ target_sources(zsnes PRIVATE
 	video/mv16tms.asm
 	video/newgfx.mac video/newgfx2.mac video/newg16wn.mac
 	video/newg162.mac video/newgfx16.mac
-	video/newg162.asm 
-	video/newgfx.asm 
+	video/newg162.asm
+	video/newgfx.asm
 	video/newgfx16.asm
-	video/newgfx2.asm 
+	video/newgfx2.asm
 	video/m716text.asm
 	video/procvid.asm video/2xsaimmx.inc video/copyvid.inc
 	video/procvidc.c)
@@ -256,10 +260,13 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "DOS")
 		dos/vesa2.asm)
 	zsnes_source_group(dos)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	find_package(OpenGL)
+	find_package(SDL REQUIRED)
 
 	target_sources(zsnes PRIVATE
 		# asm_call.h cfg.h gblhdr.h argv.h input.h
+		mmlib/mm.h
+		mmlib/mm.c
+		mmlib/linux.c
 		linux/audio.c linux/audio.h
 		linux/battery.c
 		linux/sdlintrf.asm
@@ -267,9 +274,21 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		linux/gl_draw.h
 		linux/sw_draw.c linux/sw_draw.h
 		linux/safelib.c linux/safelib.h)
+	zsnes_source_group(mmlib)
+	configure_file(config.h.in config.h)
+	target_sources(zsnes PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 	zsnes_source_group(linux)
+
+	if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.19")
+		target_link_libraries(zsnes SDL::SDL)
+	else()
+		target_include_directories(zsnes PRIVATE ${SDL_INCLUDE_DIR})
+		target_link_libraries(zsnes ${SDL_LIBRARY})
+	endif()
 	if (OPENGL_FOUND)
 		target_sources(zsnes PRIVATE linux/gl_draw.c)
+		target_compile_definitions(zsnes PRIVATE __OPENGL__)
+		target_compile_options(zsnes PRIVATE $<$<COMPILE_LANGUAGE:ASM_NASM>:-D__OPENGL__>)  # Sigh
 		target_link_libraries(zsnes OpenGL::GL)
 	endif()
 endif()

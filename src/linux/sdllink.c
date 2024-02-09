@@ -31,8 +31,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "audio.h"
 #include "safelib.h"
-#include "../cfg.h"
-#include "../input.h"
+#include "cfg.h"
+#include "input.h"
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;

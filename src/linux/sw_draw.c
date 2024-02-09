@@ -21,7 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 #include "../gblhdr.h"
-#include "../cfg.h"
+#include "cfg.h"
 #include "../asm_call.h"
 
 

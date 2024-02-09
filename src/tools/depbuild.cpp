@@ -24,6 +24,7 @@ This program generates dependencies for all C/C++/Assembly files
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <unistd.h>
 using namespace std;
 
 #include "fileutil.h"

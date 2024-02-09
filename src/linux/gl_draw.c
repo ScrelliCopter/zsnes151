@@ -19,8 +19,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <GL/gl.h>
 
-#include "../cfg.h"
+#include "cfg.h"
 #include "../gblhdr.h"
 #include "../asm_call.h"
 
