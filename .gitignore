@@ -1,0 +1,14 @@
+# Build dirs
+build/
+cmake-build-*/
+/v[cs][0-9]*/
+
+# IDE crap
+.idea/
+.vs/
+
+# MacOS guff
+.DS_Store
+
+# Windows guff
+Thumbs.db
