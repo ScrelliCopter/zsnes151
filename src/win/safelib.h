@@ -11,6 +11,10 @@
 #define STDOUT_FILENO 1
 #endif
 
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
+
 FILE *safe_popen(char *, const char *);
 void safe_pclose(FILE *fp);
 

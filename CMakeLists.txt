@@ -16,7 +16,26 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 option(DEBUGGER "Enable the debugger (links curses)" OFF)
 option(JMA "Enable support for NSRT compressed ROMs" ON)
 
+option(USE_SYSTEM_ZLIB "Use the system ZLib instead of the bundled one" ${UNIX})
+if (UNIX AND NOT APPLE)
+	option(USE_SYSTEM_PNG "Use the system LIBPNG instead of the bundled one" ON)
+else()
+	option(USE_SYSTEM_PNG "Use the system LIBPNG instead of the bundled one" OFF)
+endif()
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+if (USE_SYSTEM_ZLIB)
+	find_package(ZLIB REQUIRED)
+else()
+	add_subdirectory(ext/zlib)
+endif()
+
+if (USE_SYSTEM_PNG)
+	find_package(PNG REQUIRED)
+else()
+	add_subdirectory(ext/lpng12)
+endif()
 
 add_subdirectory(src)
 

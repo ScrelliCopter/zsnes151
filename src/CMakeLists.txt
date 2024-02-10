@@ -1,8 +1,5 @@
 include(ZSNESHelpers)
 
-find_package(ZLIB REQUIRED)
-find_package(PNG REQUIRED)
-
 if (MINGW)
 	add_executable(objfix objfix.c)
 	zsnes_target_defs_common(objfix)
