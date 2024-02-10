@@ -17,11 +17,7 @@ option(DEBUGGER "Enable the debugger (links curses)" OFF)
 option(JMA "Enable support for NSRT compressed ROMs" ON)
 
 option(USE_SYSTEM_ZLIB "Use the system ZLib instead of the bundled one" ${UNIX})
-if (UNIX AND NOT APPLE)
-	option(USE_SYSTEM_PNG "Use the system LIBPNG instead of the bundled one" ON)
-else()
-	option(USE_SYSTEM_PNG "Use the system LIBPNG instead of the bundled one" OFF)
-endif()
+option(USE_SYSTEM_PNG "Use the system LIBPNG instead of the bundled one" OFF)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
