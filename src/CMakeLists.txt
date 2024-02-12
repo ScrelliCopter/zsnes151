@@ -18,13 +18,17 @@ if (CMAKE_VERSION VERSION_LESS "3.5")
 	include(CMakeParseArguments)
 endif()
 
+set(UNIX_PLATFORMS Linux Darwin)
+set(VIDEO_PLATFORMS Windows Linux Darwin)
+set(OPENGL_PLATFORMS ${UNIX_PLATFORMS})
+
 add_executable(parsegen parsegen.cpp)
 target_link_libraries(parsegen ZLIB::ZLIB)
 zsnes_target_defs_common(parsegen)
 zsnes_target_c_flags(parsegen)
 
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if (CMAKE_SYSTEM_NAME STREQUAL OPENGL_PLATFORMS)
 	find_package(OpenGL)
 endif()
 
@@ -181,7 +185,7 @@ target_sources(zsnes PRIVATE
 	video/m716text.asm
 	video/procvid.asm video/2xsaimmx.inc video/copyvid.inc
 	video/procvidc.c)
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if (CMAKE_SYSTEM_NAME IN_LIST VIDEO_PLATFORMS)
 	target_sources(zsnes PRIVATE
 		# macros.mac
 		video/2xsaiw.asm
@@ -256,14 +260,20 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "DOS")
 		dos/vesa12.asm
 		dos/vesa2.asm)
 	zsnes_source_group(dos)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif (CMAKE_SYSTEM_NAME IN_LIST UNIX_PLATFORMS)
 	find_package(SDL REQUIRED)
+
+	target_sources(zsnes PRIVATE mmlib/mm.c mmlib/mm.h)
+	if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+		target_sources(zsnes PRIVATE mmlib/linux.c)
+	endif()
+	if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+		target_sources(zsnes PRIVATE mmlib/osx.c)
+	endif()
+	zsnes_source_group(mmlib)
 
 	target_sources(zsnes PRIVATE
 		# asm_call.h cfg.h gblhdr.h argv.h input.h
-		mmlib/mm.h
-		mmlib/mm.c
-		mmlib/linux.c
 		linux/audio.c linux/audio.h
 		linux/battery.c
 		linux/sdlintrf.asm
@@ -271,11 +281,21 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		linux/gl_draw.h
 		linux/sw_draw.c linux/sw_draw.h
 		linux/safelib.c linux/safelib.h)
-	zsnes_source_group(mmlib)
 	configure_file(config.h.in config.h)
 	target_sources(zsnes PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 	zsnes_source_group(linux)
 
+	if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+		find_library(CARBON Carbon REQUIRED)
+		find_library(IOKIT IOKit REQUIRED)
+		find_library(FOUNDATION Foundation REQUIRED)
+
+		target_sources(zsnes PRIVATE osx/SDLMain.m osx/SDLMain.h)
+		zsnes_source_group(osx)
+		target_link_libraries(zsnes ${CARBON} ${IOKIT} ${FOUNDATION})
+		target_link_options(zsnes PRIVATE
+			-mdynamic-no-pic -read_only_relocs suppress -undefined dynamic_lookup)
+	endif()
 	if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.19")
 		target_link_libraries(zsnes SDL::SDL)
 	else()
